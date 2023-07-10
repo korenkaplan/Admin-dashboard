@@ -23,3 +23,19 @@ def init_data(excel_file_path):
 
 
     return sheet_dict
+
+
+def get_transactions_users__items_data_frame(excel_file_path):
+    """
+    Initialize data from an Excel file.
+
+    Args:
+        excel_file_path (str): Path to the Excel file.
+    Returns:
+      data_frame:  a data frame composed of the transactions with the user information and the items
+    """
+    sheet_dict = init_data(excel_file_path)
+    merged_df = pd.merge(sheet_dict['users'], sheet_dict['transactions'],  on='user_id')
+    merged_df = pd.merge(merged_df, sheet_dict['items'], on='item_id')
+    return merged_df
+
