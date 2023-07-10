@@ -1,4 +1,3 @@
-from excel_data_frames import get_transactions_users__items_data_frame, init_data
 import streamlit as st
 import pandas as pd
 
@@ -20,7 +19,7 @@ def sidebar_config(data_frame):
     # Get the inputs from the selects and checkboxes
     full_name, item_name, category, printing = init_sidebar_selects(data_frame)
 
-    male_check, female_check, winter_check, summer_check = init_sidebar_checkboxes(data_frame)
+    male_check, female_check, winter_check, summer_check = init_sidebar_checkboxes()
     # A divider
     st.sidebar.markdown('---')
 
@@ -34,14 +33,14 @@ def sidebar_config(data_frame):
     queries_dict = init_selects_queries_dict()
 
     # The prefix of the query made of the inputs that can't be null
-    pre_query = f'item_tags.isin(@item_tags) and @start_date <= order_date <= @end_date and season.isin(@season)'
+    prefix_query = f'item_tags.isin(@item_tags) and @start_date <= order_date <= @end_date and season.isin(@season)'
 
     # Build the query from the selected values
     select_query: str = build_final_query_string(full_name, item_name, category, printing, queries_dict)
 
     # Check if select_query is null means no values were selected in the selects box the filter by the basic filters
     # else select_query is not null then add the selected query to the prefix one
-    df_selections = data_frame.query(f'{select_query} and {pre_query}') if select_query else data_frame.query(f'{pre_query}')
+    df_selections = data_frame.query(f'{select_query} and {prefix_query}') if select_query else data_frame.query(f'{prefix_query}')
     return df_selections
 
 
@@ -52,7 +51,7 @@ def init_selects_queries_dict():
         Returns:
             dict: A dictionary containing the queries for select options.
         """
-    queries ={}
+    queries = {}
     queries['item_name_query'] = ' item_name == @item_name '
     queries['client_name_query'] = ' full_name == @full_name '
     queries['printing_query'] = ' printing == @printing '
@@ -117,12 +116,9 @@ def init_sidebar_selects(data_frame):
     return full_name, item_name, category, printing
 
 
-def init_sidebar_checkboxes(data_frame):
+def init_sidebar_checkboxes():
     """
         Initialize the sidebar checkboxes.
-
-        Args:
-            data_frame (pd.DataFrame): The original DataFrame containing the data.
 
         Returns:
             tuple: The selected checkbox values.
@@ -170,13 +166,14 @@ def get_value_from_checkbox_sidebar(male_check, female_check, winter_check, summ
            tuple: The selected item tags and season values.
        """
     item_tags = []
+    season = []
+
     if male_check:
         item_tags.append('male')
     if female_check:
         item_tags.append('female')
-    season = []
     if winter_check:
         season.append('fall/winter')
     if summer_check:
         season.append('spring/summer')
-        return item_tags,season
+    return item_tags, season

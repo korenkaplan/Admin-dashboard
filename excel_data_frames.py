@@ -38,4 +38,3 @@ def get_transactions_users__items_data_frame(excel_file_path):
     merged_df = pd.merge(sheet_dict['users'], sheet_dict['transactions'],  on='user_id')
     merged_df = pd.merge(merged_df, sheet_dict['items'], on='item_id')
     return merged_df
-
