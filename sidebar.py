@@ -27,13 +27,13 @@ def sidebar_config(data_frame):
     start_date, end_date = init_sidebar_dates_pickers(data_frame)
 
     # Get the values from the checkboxes item tags and season
-    item_tags, season = get_value_from_checkbox_sidebar(male_check, female_check, winter_check, summer_check)
+    gender, season = get_value_from_checkbox_sidebar(male_check, female_check, winter_check, summer_check)
 
     # Initiate the queries for the filtering
     queries_dict = init_selects_queries_dict()
 
     # The prefix of the query made of the inputs that can't be null
-    prefix_query = f'item_tags.isin(@item_tags) and @start_date <= order_date <= @end_date and season.isin(@season)'
+    prefix_query = f'gender.isin(@gender) and @start_date <= order_date <= @end_date and season.isin(@season)'
 
     # Build the query from the selected values
     select_query: str = build_final_query_string(full_name, item_name, category, printing, queries_dict)
@@ -123,7 +123,7 @@ def init_sidebar_checkboxes():
         Returns:
             tuple: The selected checkbox values.
         """
-    st.sidebar.header('Item Tag:')
+    st.sidebar.header('Gender:')
     male_check = st.sidebar.checkbox('Male', value=True)
     female_check = st.sidebar.checkbox('Female', value=True)
 
