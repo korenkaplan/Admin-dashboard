@@ -57,7 +57,7 @@ def create_scatter_plot(data_frame):
     grouped_df = data_frame.groupby(['month', 'gender'])['amount'].sum().reset_index()
 
     # Define color mapping for male and female
-    color_mapping = {'male': 'blue', 'female': 'red'}
+    color_mapping = {'male': 'blue', 'female': 'green'}
 
     # Create the scatter plot
     fig = px.scatter(grouped_df, x='month', y='amount', color='gender', color_discrete_map=color_mapping,
@@ -68,3 +68,6 @@ def create_scatter_plot(data_frame):
 
     # Return the chart
     return fig
+
+
+

@@ -16,17 +16,25 @@ def create_pie_chart(data_frame):
         Returns:
             plotly.graph_objects.Figure: The pie chart.
     """
-    # Group by category and calculate the sum of the total
-    category_totals = data_frame.groupby('category')['total'].sum().reset_index()
+    is_one_category_selected = len(data_frame.groupby('category').count()) <= 1
 
-    # Create a pie chart with Plotly Express
-    fig = px.pie(category_totals, values='total', names='category')
+    if is_one_category_selected:
+        print('One category selected')
+
+    else:
+        # Group by category and calculate the sum of the total
+        category_totals = data_frame.groupby('category')['total'].sum().reset_index()
+        # Create a pie chart with Plotly Express
+        fig = px.pie(category_totals, values='total', names='category')
 
     # Get unique categories from the DataFrame
     categories = data_frame['category'].unique()
 
     # Create a select option for the category
-    selected_category = st.selectbox('Select a category', ['All Categories'] + list(categories))
+    selected_category = data_frame['category'].values[0] if is_one_category_selected else 'All Categories'
+
+
+
     # Get the filtered pie graph by the selected category
     fig = filter_data_from_selected_category(selected_category, data_frame)
 
@@ -50,7 +58,8 @@ def filter_data_from_selected_category(selected_category, data_frame):
         category_totals = data_frame.groupby('category')['total'].sum().reset_index()
 
         # Create a pie chart with Plotly Express
-        return px.pie(category_totals, values='total', names='category', hole=inner_hole_size)
+        return px.pie(category_totals, title='distribution of sales per category', values='total', names='category', hole=inner_hole_size, width=500,)
+
 
     else:
         # Filter the DataFrame based on the selected category
@@ -58,4 +67,9 @@ def filter_data_from_selected_category(selected_category, data_frame):
         # Group by item_name and calculate the sum of the total
         item_totals = filtered_df.groupby('item_name')['total'].sum().reset_index()
         # Create a pie chart with Plotly Express
-        return px.pie(filtered_df, values='total', names='item_name', hole=inner_hole_size)
+        return px.pie(filtered_df,title=f'distribution of sales per item in {selected_category}', values='total', names='item_name', hole=inner_hole_size)
+
+
+
+
+

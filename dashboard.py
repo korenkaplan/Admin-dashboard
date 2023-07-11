@@ -6,6 +6,7 @@ import plotly.express as px
 from sidebar import sidebar_config
 from category_sales_pie_chart import create_pie_chart
 from scatter_graph import create_scatter_plot
+from grouped_bar_chart import create_grouped_bar_chart
 
 
 def dashboard_config(transactions_user_df, projection):
@@ -19,74 +20,87 @@ def dashboard_config(transactions_user_df, projection):
       Returns:
           None
       """
-    # Create the configuration for streamlit
+
+    # Create the configuration for the page
     st.set_page_config(page_title='Sales Dashboard', page_icon=':bar_chart:', layout='wide')
+
     # header of the page
     header()
+
     # pass the data through the sidebar's filters.
     df_selection = sidebar_config(transactions_user_df[projection])
+
     # Convert the date to format: dd/mm/yyyy
     df_selection['order_date'] = df_selection['order_date'].dt.strftime('%m/%d/%Y')
-    # The top row kpi(avg , total and Total transactions)
+
+
+
+    # The top row kpi(avg , total and Total transactions), and add the 'total' column to the data frame
     top_row_kpi(df_selection)
-    # Display the data frame
+
+    # Display the table data frame
     st.dataframe(df_selection)
 
-    # Create and display the pie chart
-    fig = create_pie_chart(df_selection)
-    st.plotly_chart(fig)
-
-    grouped_bar = create_grouped_bar_chart(df_selection)
-    st.plotly_chart(grouped_bar)
-
-    # Create and display the scatter plot
-    # scatter_plot = create_scatter_plot(df_selection)
-    # st.plotly_chart(scatter_plot)
+    # Create the charts from the filtered data_frame
+    pie_chart, horizontal_bar, grouped_bar, scatter_plot = create_charts(df_selection)
 
 
-def create_grouped_bar_chart(data_frame):
+
+    st.markdown('---')
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(pie_chart)
+    with col2:
+        st.plotly_chart(horizontal_bar)
+
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(grouped_bar)
+    with col2:
+        st.plotly_chart(scatter_plot)
+
+
+
+
+
+def create_charts(data_frame):
+    pie_chart = create_pie_chart(data_frame)
+    horizontal_bar = create_horizontal_bar_chart(data_frame)
+    grouped_bar = create_grouped_bar_chart(data_frame)
+    scatter_plot = create_scatter_plot(data_frame)
+    return pie_chart, horizontal_bar, grouped_bar, scatter_plot
+
+
+def create_horizontal_bar_chart(data_frame):
     """
-    Create a grouped bar chart to visualize the total amount by month and gender.
+    Create a horizontal bar chart to visualize the total amount of money from sales for each item.
 
     Args:
         data_frame (pd.DataFrame): The DataFrame containing the data.
 
     Returns:
-        plotly.graph_objects.Figure: The grouped bar chart.
+        plotly.graph_objects.Figure: The horizontal bar chart.
     """
-    # Convert order_date to datetime
-    data_frame['order_date'] = pd.to_datetime(data_frame['order_date'], format='mixed')
+    # Group by item_name and calculate the total amount
+    grouped_df = data_frame.groupby('item_name')['total'].sum().reset_index()
+    # Sort the DataFrame by total amount in descending order
+    grouped_df = grouped_df.sort_values('total', ascending=True).tail(10)
+    # Round the total values to 2 decimal places
+    grouped_df['rounded_total'] = grouped_df['total'].round()
+    # Create the horizontal bar chart using Plotly Express
+    fig = px.bar(
+        grouped_df,
+        x='total',
+        y='item_name',
+        orientation='h',
+        labels={'total': 'Total Amount in 💲', 'item_name': 'Item Name'},
+        title='Top 10 selling items',
+        text='rounded_total',
+        width=550,
+        )
 
-    # Extract the month from the order_date column
-    data_frame['month'] = data_frame['order_date'].dt.month
-
-    # Group by month and gender, and calculate the total amount
-    grouped_df = data_frame.groupby(['month', 'gender'])['total'].sum().reset_index()
-
-    # Create a bar trace for males
-    trace_male = go.Bar(
-        x=grouped_df[grouped_df['gender'] == 'male']['month'],
-        y=grouped_df[grouped_df['gender'] == 'male']['total'],
-        name='Male'
-    )
-
-    # Create a bar trace for females
-    trace_female = go.Bar(
-        x=grouped_df[grouped_df['gender'] == 'female']['month'],
-        y=grouped_df[grouped_df['gender'] == 'female']['total'],
-        name='Female'
-    )
-
-    # Create the layout for the chart
-    layout = go.Layout(
-        title='Total Amount by Month and Gender',
-        xaxis=dict(title='Month'),
-        yaxis=dict(title='Total Amount'),
-        barmode='group'
-    )
-
-    # Create the figure and add the traces
-    fig = go.Figure(data=[trace_male, trace_female], layout=layout)
 
     # Return the chart
     return fig
