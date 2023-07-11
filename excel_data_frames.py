@@ -15,17 +15,15 @@ def init_data(excel_file_path):
     """
     excel_file_path: str = excel_file_path
 
-    # Read all sheets from Excel file
+    # Read all sheets from Excel file, **sheet_name=None -> to read all sheets from the file
     all_sheets = pd.read_excel(excel_file_path, sheet_name=None)
 
-    # Create a dictionary to store the sheets
+    # Create a dictionary to store the sheets , dictionary comprehension
     sheet_dict = {sheet_name: data_frame for sheet_name, data_frame in all_sheets.items()}
-
-
     return sheet_dict
 
 
-def get_transactions_users__items_data_frame(excel_file_path):
+def get_main_data_frame(excel_file_path):
     """
     Initialize data from an Excel file.
 

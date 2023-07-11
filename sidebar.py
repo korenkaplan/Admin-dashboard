@@ -18,10 +18,14 @@ def sidebar_config(data_frame):
 
     # Get the inputs from the selects and checkboxes
     full_name, item_name, category, printing = init_sidebar_selects(data_frame)
+    # Double end slider for the ages range
+    age_slider = st.sidebar.slider('Choose Range of Ages:', value=[8, 90], max_value=120)
 
     male_check, female_check, winter_check, summer_check = init_sidebar_checkboxes()
     # A divider
     st.sidebar.markdown('---')
+
+
 
     # Get the input from the date inputs
     start_date, end_date = init_sidebar_dates_pickers(data_frame)
@@ -33,7 +37,7 @@ def sidebar_config(data_frame):
     queries_dict = init_selects_queries_dict()
 
     # The prefix of the query made of the inputs that can't be null
-    prefix_query = f'gender.isin(@gender) and @start_date <= order_date <= @end_date and season.isin(@season)'
+    prefix_query = f'gender.isin(@gender) and @start_date <= order_date <= @end_date and season.isin(@season) and @age_slider[0] <= age <= @age_slider[1]'
 
     # Build the query from the selected values
     select_query: str = build_final_query_string(full_name, item_name, category, printing, queries_dict)
@@ -41,15 +45,16 @@ def sidebar_config(data_frame):
     # Check if select_query is null means no values were selected in the selects box the filter by the basic filters
     # else select_query is not null then add the selected query to the prefix one
     df_selections = data_frame.query(f'{select_query} and {prefix_query}') if select_query else data_frame.query(f'{prefix_query}')
+
     return df_selections
 
 
 def init_selects_queries_dict():
     """
-        Initialize a dictionary of queries for select options.
+        Initialize a dictionary of filtering queries for select options.
 
         Returns:
-            dict: A dictionary containing the queries for select options.
+            dict: A dictionary containing the filtering queries for select options.
         """
     queries = {}
     queries['item_name_query'] = ' item_name == @item_name '
@@ -71,19 +76,31 @@ def build_final_query_string(full_name, item_name, category, printing, queries_d
         queries_dict (dict): The dictionary of queries for select options.
 
     Returns:
-        str: The final query string.
+        conditions_query (str): The final query string.
     """
     conditions = []
+
+    # Check if client names are selected and add the corresponding query
     if full_name:
         conditions.append(queries_dict['client_name_query'])
+
+    # Check if item names are selected and add the corresponding query
     if item_name:
         conditions.append(queries_dict['item_name_query'])
+
+    # Check if categories are selected and add the corresponding query
     if category:
         conditions.append(queries_dict['category_query'])
+
+    # Check if printing options are selected and add the corresponding query
     if printing:
         conditions.append(queries_dict['printing_query'])
+
+    # Join all the conditions using 'and' to form the final query string
     conditions_query = ' and '.join(conditions)
+
     return conditions_query
+
 
 
 def init_sidebar_selects(data_frame):
@@ -96,6 +113,7 @@ def init_sidebar_selects(data_frame):
         Returns:
             tuple: The selected client names, item names, categories, and printing options.
         """
+    # Initialize the sidebar select options for client names, item names, printing options, and categories
     full_name = st.sidebar.multiselect(
         'Select the client name:',
         options=data_frame['full_name'].unique(),
@@ -113,6 +131,7 @@ def init_sidebar_selects(data_frame):
         'Select the category:',
         options=data_frame['category'].unique(),
     )
+    # Return the selected values as a tuple
     return full_name, item_name, category, printing
 
 
@@ -123,6 +142,7 @@ def init_sidebar_checkboxes():
         Returns:
             tuple: The selected checkbox values.
         """
+    # Initialize the sidebar checkboxes and return the values
     st.sidebar.header('Gender:')
     male_check = st.sidebar.checkbox('Male', value=True)
     female_check = st.sidebar.checkbox('Female', value=True)
@@ -143,12 +163,14 @@ def init_sidebar_dates_pickers(data_frame):
         Returns:
             tuple: The selected start and end dates.
         """
+    # Convert the order_date column to datetime for manipulation and find the min and max value
     data_frame['order_date'] = pd.to_datetime(data_frame['order_date'])
     min_date = pd.to_datetime(data_frame['order_date']).min()
     max_date = pd.to_datetime(data_frame['order_date']).max()
-
-    start_date = st.sidebar.date_input('Start date', value=min_date)
-    end_date = st.sidebar.date_input('End date', value=max_date)
+    # Initialize the sidebar date pickers and define the min and max value to choose from
+    start_date = st.sidebar.date_input('Start date', min_value=min_date, max_value=max_date, value=min_date)
+    end_date = st.sidebar.date_input('End date', min_value=min_date, max_value=max_date, value=max_date)
+    # Return the values
     return start_date, end_date
 
 
@@ -163,11 +185,11 @@ def get_value_from_checkbox_sidebar(male_check, female_check, winter_check, summ
            summer_check (bool): The value of the summer checkbox.
 
        Returns:
-           tuple: The selected item tags and season values.
+           tuple: The selected item tags and season values. To show in the data frame
        """
     item_tags = []
     season = []
-
+    # Check the values of the checkboxes if true add them to the filtering query (all included will show)
     if male_check:
         item_tags.append('male')
     if female_check:

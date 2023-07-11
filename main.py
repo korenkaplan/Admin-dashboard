@@ -1,12 +1,11 @@
 from dashboard import dashboard_config
-from excel_data_frames import get_transactions_users__items_data_frame,init_data
+from excel_data_frames import get_main_data_frame
 
 
 def main():
-    combined_df = get_transactions_users__items_data_frame("C:\\Users\\Koren Kaplan\\Desktop\\Projects\\Python Final Project\\Python Scan and Go Database.xlsx")
-    projection = ['order_date', 'gender', 'full_name', 'item_name', 'category', 'item_tags', 'season', 'printing', 'price', 'amount']
-    # shheet= init_data("C:\\Users\\Koren Kaplan\\Desktop\\Projects\\Python Final Project\\Python Scan and Go Database.xlsx")
-    # print(shheet['transactions'])
+    excel_file_path = "C:\\Users\\Koren Kaplan\\Desktop\\Projects\\Python Final Project\\Python Scan and Go Database.xlsx"
+    projection = ['full_name', 'age', 'gender', 'item_name', 'category', 'item_tags', 'season', 'printing', 'price', 'amount', 'order_date']
+    combined_df = get_main_data_frame(excel_file_path)
     dashboard_config(combined_df, projection)
 
 
