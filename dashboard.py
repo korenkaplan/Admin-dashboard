@@ -8,6 +8,48 @@ from grouped_bar_chart import create_grouped_bar_chart
 from top_selling_items import create_horizontal_bar_chart
 
 
+def init_dashboard(projection):
+    """
+    The start-up function wait for the user to upload the Excel file then start the dashboard
+    Args:
+     projection: the columns to project in the data frame
+    Return:
+         None
+    """
+    # Create the Tab configuration for the page
+    st.set_page_config(page_title='Scan & Go 2022 Analytics', page_icon=':bar_chart:', layout='wide')
+    # Create the main header of the page
+    header()
+    # Create the container once the file is loaded the upload file container will disappear
+    holder = st.empty()
+    # The upload file container
+    uploaded_file = holder.file_uploader("Choose the Scan & Go analytics excel file ", type="xlsx", accept_multiple_files=False)
+    # Once the file is uploaded hide the container and start the dashboard configuration reading from the Excel file
+    if uploaded_file:
+        # Hide the upload file container
+        holder.empty()
+        # Read the file (sheet_name=None -> read all the sheets in the file)
+        df = pd.read_excel(uploaded_file, sheet_name=None)
+        # Merge all the sheets to a data frame
+        merged_df = merge_sheets_in_excel_file(df)
+        # Start the dashboard configuration with the data frame
+        dashboard_config(merged_df, projection)
+
+
+def merge_sheets_in_excel_file(df):
+    """
+    Merge the sheets and perform a join on the user_id and item_id to the desired data frame
+    Args:
+     df: an unfiltered data frame
+    Return:
+         merged_df: a merged data frame
+    """
+    sheet_dict = {sheet_name: data_frame for sheet_name, data_frame in df.items()}
+    merged_df = pd.merge(sheet_dict['users'], sheet_dict['transactions'], on='user_id')
+    merged_df = pd.merge(merged_df, sheet_dict['items'], on='item_id')
+    return merged_df
+
+
 def dashboard_config(main_data_frame, projection):
     """
       Configure the sales dashboard. The main body of the page
@@ -20,11 +62,6 @@ def dashboard_config(main_data_frame, projection):
           None
       """
 
-    # Create the Tab configuration for the page
-    st.set_page_config(page_title='Scan & Go 2022 Analytics', page_icon=':bar_chart:', layout='wide')
-
-    # Create the main header of the page
-    header()
 
     # Convert the birth_date column to age column for easier manipulations.
     main_data_frame = convert_birth_date_to_age_column(main_data_frame)
@@ -39,7 +76,7 @@ def dashboard_config(main_data_frame, projection):
     top_row_kpi(filtered_data_frame)
 
     # Display the table data frame
-    st.dataframe(filtered_data_frame,use_container_width=True,hide_index=True)
+    st.dataframe(filtered_data_frame, use_container_width=True, hide_index=True)
 
     # Create the charts from the filtered data_frame
     pie_chart, horizontal_bar, grouped_bar, scatter_plot = create_charts(filtered_data_frame)
@@ -70,7 +107,7 @@ def convert_birth_date_to_age_column(main_data_frame):
     # Convert birth_date column to datetime
     main_data_frame['age'] = pd.to_datetime(main_data_frame['birth_date'])
 
-    # Calculate age based on birth date
+    # Calculate age based on birthdate
     current_year = datetime.datetime.now().year
     main_data_frame['age'] = current_year - main_data_frame['birth_date'].dt.year
 
@@ -148,4 +185,3 @@ def header():
     """
     st.title(':bar_chart: Scan & Go 2022 Sales Analytics')
     st.markdown('---')
-
