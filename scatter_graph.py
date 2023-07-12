@@ -2,7 +2,7 @@ import plotly.express as px
 
 
 # Graph width
-width = 550
+GRAPH_WIDTH = 550
 
 
 def create_scatter_plot2(data_frame):
@@ -15,7 +15,7 @@ def create_scatter_plot2(data_frame):
     fig = px.scatter(grouped_df, x='age', y='total',
                      labels={'age': 'Age', 'total': 'Total Spend'},
                      title='Age vs. Total Spend',
-                     width=width,
+                     width=GRAPH_WIDTH,
                      color_discrete_map=color_mapping,
                      color='gender')
 

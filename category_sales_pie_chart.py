@@ -3,9 +3,9 @@ import pandas as pd
 import plotly.express as px
 
 # The size of the inner hole inside the pie chart
-inner_hole_size = 0.3
+INNER_HOLE_SIZE = 0.3
 # width of the chart
-width = 500
+CHART_WIDTH = 500
 
 
 def create_pie_chart(data_frame):
@@ -50,11 +50,11 @@ def filter_data_from_selected_category(selected_category, data_frame):
 
         # Create a pie chart with Plotly Express
         return px.pie(category_totals, title='Distribution of sales per category', values='total', names='category',
-                      hole=inner_hole_size, width=width)
+                      hole=INNER_HOLE_SIZE, width=CHART_WIDTH)
 
     else:
         # Filter the DataFrame based on the selected category
         filtered_df = data_frame[data_frame['category'] == selected_category]
         # Create a pie chart with Plotly Express
         return px.pie(filtered_df, title=f'Distribution of sales per item in {selected_category}', values='total',
-                      names='item_name', hole=inner_hole_size, width=width)
+                      names='item_name', hole=INNER_HOLE_SIZE, width=CHART_WIDTH)

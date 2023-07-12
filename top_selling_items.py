@@ -3,9 +3,9 @@ import plotly.express as px
 
 
 # Graph width
-width: int = 550
+GRAPH_WIDTH: int = 550
 # The column to sum
-col_to_sum: str = 'total'
+TOTAL_COLUMN_STR: str = 'total'
 
 
 def create_horizontal_bar_chart(data_frame):
@@ -19,23 +19,21 @@ def create_horizontal_bar_chart(data_frame):
         plotly.graph_objects.Figure: The horizontal bar chart.
     """
     # Group by item_name and calculate the total amount
-    grouped_df = data_frame.groupby('item_name')[col_to_sum].sum().reset_index()
+    grouped_df = data_frame.groupby('item_name')[TOTAL_COLUMN_STR].sum().reset_index()
     # Sort the DataFrame by total amount in descending order and show the tail 10 (its ascending order so tail is max)
-    grouped_df = grouped_df.sort_values(col_to_sum, ascending=True).tail(10)
+    grouped_df = grouped_df.sort_values(TOTAL_COLUMN_STR, ascending=True).tail(10)
     # Round the total values
-    grouped_df[col_to_sum] = grouped_df[col_to_sum].round()
+    grouped_df[TOTAL_COLUMN_STR] = grouped_df[TOTAL_COLUMN_STR].round()
     # Create the horizontal bar chart using Plotly Express
     fig = px.bar(
         grouped_df,
-        x=col_to_sum,
+        x=TOTAL_COLUMN_STR,
         y='item_name',
         orientation='h',
-        labels={col_to_sum: 'Total Amount in 💲', 'item_name': 'Item Name'},
+        labels={TOTAL_COLUMN_STR: 'Total Amount in 💲', 'item_name': 'Item Name'},
         title='Top 10 selling items',
-        text=col_to_sum,
-        width=width,
+        text=TOTAL_COLUMN_STR,
+        width=GRAPH_WIDTH,
         )
-
-
     # Return the chart
     return fig
