@@ -104,9 +104,6 @@ def convert_birth_date_to_age_column(main_data_frame):
     # Convert birth_date column to datetime
     main_data_frame['birth_date'] = pd.to_datetime(main_data_frame['birth_date'])
 
-    # Convert birth_date column to datetime
-    main_data_frame['age'] = pd.to_datetime(main_data_frame['birth_date'])
-
     # Calculate age based on birthdate
     current_year = datetime.datetime.now().year
     main_data_frame['age'] = current_year - main_data_frame['birth_date'].dt.year

@@ -18,6 +18,7 @@ def sidebar_config(data_frame):
 
     # Get the inputs from the selects and checkboxes
     full_name, item_name, category, printing = init_sidebar_selects(data_frame)
+
     # Double end slider for the ages range
     age_slider = st.sidebar.slider('Choose Range of Ages:', value=[8, 90], max_value=120)
 
@@ -37,7 +38,7 @@ def sidebar_config(data_frame):
     queries_dict = init_selects_queries_dict()
 
     # The prefix of the query made of the inputs that can't be null
-    prefix_query = f'gender.isin(@gender) and @start_date <= order_date <= @end_date and season.isin(@season) and @age_slider[0] <= age <= @age_slider[1]'
+    prefix_query = f'gender.isin(@gender)  and @start_date <= order_date <= @end_date and season.isin(@season) and @age_slider[0] <= age <= @age_slider[1]'
 
     # Build the query from the selected values
     select_query: str = build_final_query_string(full_name, item_name, category, printing, queries_dict)
@@ -79,7 +80,6 @@ def build_final_query_string(full_name, item_name, category, printing, queries_d
         conditions_query (str): The final query string.
     """
     conditions = []
-
     # Check if client names are selected and add the corresponding query
     if full_name:
         conditions.append(queries_dict['client_name_query'])
@@ -147,6 +147,7 @@ def init_sidebar_checkboxes():
     male_check = st.sidebar.checkbox('Male', value=True)
     female_check = st.sidebar.checkbox('Female', value=True)
 
+
     st.sidebar.header('Select a Season:')
     winter_check = st.sidebar.checkbox('fall/winter', value=True)
     summer_check = st.sidebar.checkbox('spring/summer', value=True)
@@ -165,8 +166,8 @@ def init_sidebar_dates_pickers(data_frame):
         """
     # Convert the order_date column to datetime for manipulation and find the min and max value
     data_frame['order_date'] = pd.to_datetime(data_frame['order_date'])
-    min_date = pd.to_datetime(data_frame['order_date']).min()
-    max_date = pd.to_datetime(data_frame['order_date']).max()
+    min_date = data_frame['order_date'].min()
+    max_date = data_frame['order_date'].max()
     # Initialize the sidebar date pickers and define the min and max value to choose from
     start_date = st.sidebar.date_input('Start date', min_value=min_date, max_value=max_date, value=min_date)
     end_date = st.sidebar.date_input('End date', min_value=min_date, max_value=max_date, value=max_date)
