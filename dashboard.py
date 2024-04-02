@@ -7,11 +7,11 @@ from scatter_graph import create_scatter_plot2
 from grouped_bar_chart import create_grouped_bar_chart
 from top_selling_items import create_horizontal_bar_chart
 
-
+excel_file_url = r'C:\Users\Koren Kaplan\Desktop\לימודים\Projects\Python Final Project\AdminDash\Excel file to upload\Python_Scan_and_Gos_sales_analytics_2022.xlsx'
 def init_dashboard(projection):
     """
     The start-up function wait for the user to upload the Excel file then start the dashboard
-    Args:
+    Params:
      projection: the columns to project in the data frame
     Return:
          None
@@ -20,20 +20,20 @@ def init_dashboard(projection):
     st.set_page_config(page_title='Scan & Go 2022 Analytics', page_icon=':bar_chart:', layout='wide')
     # Create the main header of the page
     header()
-    # Create the container once the file is loaded the upload file container will disappear
-    holder = st.empty()
-    # The upload file container
-    uploaded_file = holder.file_uploader("Choose the Scan & Go analytics excel file ", type="xlsx", accept_multiple_files=False)
-    # Once the file is uploaded hide the container and start the dashboard configuration reading from the Excel file
-    if uploaded_file:
-        # Hide the upload file container
-        holder.empty()
-        # Read the file (sheet_name=None -> read all the sheets in the file)
-        df = pd.read_excel(uploaded_file, sheet_name=None)
-        # Merge all the sheets to a data frame
-        merged_df = merge_sheets_in_excel_file(df)
-        # Start the dashboard configuration with the data frame
-        dashboard_config(merged_df, projection)
+    # # Create the container once the file is loaded the upload file container will disappear
+    # holder = st.empty()
+    # # The upload file container
+    # uploaded_file = holder.file_uploader("Choose the Scan & Go analytics excel file ", type="xlsx", accept_multiple_files=False)
+    # # Once the file is uploaded hide the container and start the dashboard configuration reading from the Excel file
+    # if uploaded_file:
+    #     # Hide the upload file container
+    #     holder.empty()
+    # Read the file (sheet_name=None -> read all the sheets in the file)
+    df = pd.read_excel(excel_file_url, sheet_name=None)
+    # Merge all the sheets to a data frame
+    merged_df = merge_sheets_in_excel_file(df)
+    # Start the dashboard configuration with the data frame
+    dashboard_config(merged_df, projection)
 
 
 def merge_sheets_in_excel_file(df):
