@@ -7,7 +7,7 @@ from scatter_graph import create_scatter_plot2
 from grouped_bar_chart import create_grouped_bar_chart
 from top_selling_items import create_horizontal_bar_chart
 
-excel_file_url = r'C:\Users\Koren Kaplan\Desktop\לימודים\Projects\Python Final Project\AdminDash\Excel file to upload\Python_Scan_and_Gos_sales_analytics_2022.xlsx'
+excel_file_url = r'Excel_file_to_upload/Python_Scan_and_Gos_sales_analytics_2022.xlsx'
 def init_dashboard(projection):
     """
     The start-up function wait for the user to upload the Excel file then start the dashboard
