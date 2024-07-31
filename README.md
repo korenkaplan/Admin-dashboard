@@ -1,5 +1,5 @@
 
-![Admin-dashboard](https://socialify.git.ci/korenkaplan/Admin-dashboard/image?language=1&owner=1&name=1&stargazers=1&theme=Light)
+[[![Admin-dashboard](https://socialify.git.ci/korenkaplan/Admin-dashboard/image?language=1&owner=1&name=1&stargazers=1&theme=Light)](https://socialify.git.ci/korenkaplan/Admin-dashboard/image?forks=1&language=1&name=1&owner=1&stargazers=1&theme=Light)](https://socialify.git.ci/korenkaplan/Admin-dashboard/image?font=Inter&forks=1&language=1&name=1&owner=1&stargazers=1&theme=Auto)
 
 Sales Analytics Dashboard for Retail (Streamlit, Pandas, Plotly)
 Empower data-driven decisions in your retail business with this interactive dashboard! Analyze sales data to understand trends, customer behavior, and product performance.
