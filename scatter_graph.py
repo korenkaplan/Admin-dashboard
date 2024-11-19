@@ -7,7 +7,7 @@ GRAPH_WIDTH = 550
 
 def create_scatter_plot2(data_frame):
     # Group by age and sum the total spend
-    grouped_df = data_frame.groupby(['age', 'gender'])['total'].sum().reset_index()
+    grouped_df = data_frame.groupby(['gender'])['total'].sum().reset_index()
 
     # Define color mapping for male and female
     color_mapping = {'male': 'blue', 'female': 'red'}
