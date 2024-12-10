@@ -1,11 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from sidebar import sidebar_config
-from category_sales_pie_chart import create_pie_chart
-from scatter_graph import create_scatter_plot2
-from grouped_bar_chart import create_grouped_bar_chart
-from top_selling_items import create_horizontal_bar_chart
 import time
 import re
 import matplotlib.pyplot as plt
@@ -292,7 +287,7 @@ def create_summary_section(df):
         teams = len(df['team'].unique())
     
     # Define box styles
-    colors = ["#007bff", "#6c757d", "#28a745", "#dc3545"]
+    colors = ["#4C5270", "#F652A0", "#36EEE0", "#059DC0"]
     box_styles = [
         {"background-color": colors[0], "color": "white", "font-size": "20px"},
         {"background-color": colors[1], "color": "white", "font-size": "20px"},
@@ -337,19 +332,6 @@ def init_dashboard(projection=['full_name', 'age', 'gender', 'item_name', 'categ
     # Start the dashboard configuration with the data frame
     dashboard_config()
 
-
-def merge_sheets_in_excel_file(df):
-    """
-    Merge the sheets and perform a join on the user_id and item_id to the desired data frame
-    Args:
-     df: an unfiltered data frame
-    Return:
-         merged_df: a merged data frame
-    """
-    sheet_dict = {sheet_name: data_frame for sheet_name, data_frame in df.items()}
-    merged_df = pd.merge(sheet_dict['users'], sheet_dict['transactions'], on='user_id')
-    merged_df = pd.merge(merged_df, sheet_dict['items'], on='item_id')
-    return merged_df
 
 
 def create_visualizations(fig1,fig2,fig3, fig4):
@@ -502,80 +484,6 @@ def dashboard_config(main_data_frame=None,fig1=None,fig2=None,fig3=None):
             create_visualizations(fig1, fig2, fig3, fig4)
 
 
-def convert_birth_date_to_age_column(main_data_frame):
-
-    # Convert birth_date column to datetime
-    main_data_frame['birth_date'] = pd.to_datetime(main_data_frame['birth_date'])
-
-    # Calculate age based on birthdate
-    current_year = datetime.datetime.now().year
-    main_data_frame['age'] = current_year - main_data_frame['birth_date'].dt.year
-
-    return None
-
-
-def create_charts(data_frame: pd.DataFrame):
-    """
-    Creates various charts based on the filtered data frame.
-    Args:
-     data_frame (pd.DataFrame): The DataFrame containing the filtered data.
-    Returns:
-        tuple: A tuple containing the pie chart, horizontal bar chart, grouped bar chart, and scatter plot.
-    """
-    pie_chart = create_pie_chart(data_frame)
-    horizontal_bar = create_horizontal_bar_chart(data_frame)
-    grouped_bar = create_grouped_bar_chart(data_frame)
-    # scatter_plot = create_scatter_plot2(data_frame)
-    return pie_chart, horizontal_bar, grouped_bar
-
-
-def top_row_kpi(data_frame):
-    """
-    Display key performance indicators (KPIs) in the top row. And add the total column to the
-    data frame representing the total amount of the transaction.
-
-    Args:
-        data_frame (pd.DataFrame): The DataFrame containing the sales data.
-
-    Returns:
-        None
-    """
-    # The 'total' column from the data frame, string to avoid writing repeatedly
-    total_col = 'total'
-    # Calculate the total amount for each transaction by multiplying 'amount' and 'price' columns
-    data_frame[total_col] = data_frame['amount'] * data_frame['price']
-
-    # Check if only a single item is selected
-    is_single_item_selected = len(data_frame.groupby('item_name').count()) <= 1
-
-    # Calculate the total sum, average sale, total sales amount, and number of transactions
-    total_sum = int(data_frame[total_col].sum())
-    avg_sale = round(data_frame[total_col].mean(), 1)
-    avg_sale = avg_sale if avg_sale > 0 else 0
-    total_sales_amount = int(data_frame['amount'].sum())
-    transactions_amount = len(data_frame)
-
-    # Set the title and value based on whether a single item is selected or not
-    if not is_single_item_selected:
-        title = 'Total Transactions:'
-        value = transactions_amount
-    else:
-        title = 'Total Units Sold:'
-        value = total_sales_amount
-
-    # Display the KPIs in three columns
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.subheader("Total Sales:")
-        st.subheader(f'💲 {total_sum}')
-    with col2:
-        st.subheader("Avg Sale:")
-        st.subheader(f'💲 {avg_sale}')
-    with col3:
-        st.subheader(title)
-        st.subheader(f':hash: {value}')
-
-
 def header():
     """
     Display the header of the sales dashboard.
@@ -583,5 +491,38 @@ def header():
     Returns:
         None
     """
-    st.title(':bar_chart: Complaint Ticket Analytics')
-    st.markdown('---')
+    st.markdown("""
+    <style>
+    .header-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+
+    }
+    .compact-title {
+        font-size: 24px;
+        margin: 0;
+        padding: 0;
+    }
+    .stImage {
+        margin: 0 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Create header container with flex layout
+    st.markdown("""
+    <div class="header-container">
+        <img src="https://www.link3.net/assets/img/logo-dark.png" width="80" style="margin-right: 15px;">
+        <h1 class="compact-title">Ticket Parser & Analytics</h1>
+    </div>
+    """, unsafe_allow_html=True)
+
+def main():
+    # projection = ['full_name', 'age', 'gender', 'item_name', 'category', 'item_tags', 'season', 'printing', 'price', 'amount', 'order_date']
+    init_dashboard()
+
+
+if __name__ == '__main__':
+    main()    
